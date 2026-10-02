@@ -30,69 +30,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.fangzeng_rapidrecall.ui.theme.FangzengRapidRecallTheme
 
-val MIN_SEQUENCE_LEN = 1
-val MAX_SEQUENCE_LEN = 10
 // TODO: Implement screen changes in a better way (right now we check whether the game started in the main function and display the corresponding screen, but this gets clunky with more than 2 screens)
-@Composable
-fun MainMenu(modifier: Modifier = Modifier, startGameClicked: (Int) -> Unit, summaryClicked: () -> Unit) {
-    var sequenceLen by remember { mutableIntStateOf(1) }
 
-    Column(modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            Button(onClick = {startGameClicked(sequenceLen)}) {
-                Text("Start")
-            }
-            Button(onClick={}) {
-                Text("Summary")
-            }
-        }
-
-        // A box that contains a number from 1-10 and allows the user to increment/decrement it with arrow buttons
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text("Sequence Length: ")
-            IconButton(onClick = {
-                sequenceLen--
-                if (sequenceLen < MIN_SEQUENCE_LEN) sequenceLen = MIN_SEQUENCE_LEN
-            }) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_chevron_left_24),
-                    contentDescription = "Decrease sequence length"
-                )
-            }
-
-            Box(modifier = Modifier
-                .width(48.dp)
-                .padding(8.dp), contentAlignment = Alignment.Center) {
-                Text(text = sequenceLen.toString())
-            }
-
-            IconButton(onClick={
-                sequenceLen++
-                if (sequenceLen > MAX_SEQUENCE_LEN) sequenceLen = MAX_SEQUENCE_LEN
-            }) {
-                Icon(
-                    painter = painterResource(R.drawable.baseline_chevron_right_24),
-                    contentDescription = "Increase sequence length"
-                )
-            }
-        }
-    }
-
+enum class GameScreen() {
+    MainMenu,
+    Game,
+    Summary,
 }
 
-
-
 class MainActivity : ComponentActivity() {
-
-    fun startGameClicked(sequenceLen: Int) {
-        gameViewModel.startGame(sequenceLen)
-    }
-
-    fun summaryClicked() {
-
-    }
 
     val gameViewModel: GameViewModel = GameViewModel()
 
@@ -102,12 +54,36 @@ class MainActivity : ComponentActivity() {
         setContent {
             FangzengRapidRecallTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val gameUiState by gameViewModel.uiState.collectAsState()
-                    if (gameUiState.gameStarted) {
-                         gameScreen(gameViewModel)
-                    } else {
-                        MainMenu(modifier = Modifier.padding(innerPadding), {startGameClicked(it)},
-                            { summaryClicked() })
+                    var navController: NavHostController = rememberNavController()
+
+                    NavHost(navController = navController, startDestination = GameScreen.MainMenu.name, Modifier.padding(innerPadding)) {
+                        composable(route = GameScreen.MainMenu.name) {
+                            MainMenu(
+                                modifier = Modifier.fillMaxSize().padding(innerPadding),
+                                {
+                                    navController.navigate(GameScreen.Game.name)
+                                    gameViewModel.startGame(it)
+                                },
+                                {
+                                    navController.navigate(GameScreen.Summary.name)
+                                }
+                            )
+                        }
+                        composable(route = GameScreen.Game.name) {
+                            GameScreen(
+                                modifier = Modifier.fillMaxSize().padding(
+                                    top = innerPadding.calculateTopPadding(),
+                                    bottom = innerPadding.calculateBottomPadding(),
+                                    start = 16.dp,
+                                    end = 16.dp  // For some reason if I don't override the side values, there's no padding on the sides??
+                                    ),
+                                gameViewModel,
+                                onReturnToMenuClicked = {navController.navigate(GameScreen.MainMenu.name)}
+                            )
+                        }
+                        composable(route = GameScreen.Summary.name) {
+                            Summary(modifier = Modifier.fillMaxSize().padding(innerPadding))
+                        }
                     }
                 }
             }

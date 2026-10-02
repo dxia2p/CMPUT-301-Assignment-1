@@ -1,4 +1,5 @@
 package com.example.fangzeng_rapidrecall
 
-class AttemptsSummary {
+class GameStorage() {
+    
 }
