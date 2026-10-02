@@ -21,17 +21,21 @@ data class SequenceUiState(
     val showInputBox: Boolean = false,
     val feedbackStr: String = "",
     val showBackButton: Boolean = false,
+
 )
 
 // This class contains information about the game state, such as the digit that is currently displayed, and whether the game started
 // The class inherits from ViewModel because I need coroutines to implement a delay between changing the digits in the game
+// GameViewModel is based off the first code example in https://developer.android.com/topic/libraries/architecture/viewmodel
 class GameViewModel : ViewModel() {
-    private val sequence = mutableListOf<Int>()
+    val sequence = mutableListOf<Int>()
+    var seqLen: Int = 0
     private val _uiState = MutableStateFlow(SequenceUiState())
     val uiState: StateFlow<SequenceUiState> = _uiState.asStateFlow()
     public fun startGame(sequenceLen: Int) {
-
+        sequence.clear()
         _uiState.value = SequenceUiState(gameStarted = true)
+        seqLen = sequenceLen
 
         for(i in 1..sequenceLen) {
             sequence.add(Random.nextInt(0, 10))

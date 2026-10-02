@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun MainMenu(modifier: Modifier = Modifier, startGameClicked: (Int) -> Unit, summaryClicked: () -> Unit) {
+fun MainMenu(modifier: Modifier = Modifier, startGameClicked: (Int) -> Unit, logClicked: () -> Unit, summaryClicked: () -> Unit) {
     val MIN_SEQUENCE_LEN = 1
     val MAX_SEQUENCE_LEN = 10
     var sequenceLen by remember { mutableIntStateOf(1) }
@@ -35,6 +35,9 @@ fun MainMenu(modifier: Modifier = Modifier, startGameClicked: (Int) -> Unit, sum
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(onClick = {startGameClicked(sequenceLen)}) {
                 Text("Start")
+            }
+            Button(onClick = {logClicked()}) {
+                Text("Log")
             }
             Button(onClick={summaryClicked()}) {
                 Text("Summary")

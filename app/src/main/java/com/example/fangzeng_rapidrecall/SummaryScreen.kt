@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun Summary(modifier: Modifier = Modifier) {
+fun SummaryScreen(modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text("Summary", fontSize = 48.sp)
     }

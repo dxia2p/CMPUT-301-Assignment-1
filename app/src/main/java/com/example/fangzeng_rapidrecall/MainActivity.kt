@@ -41,12 +41,15 @@ import com.example.fangzeng_rapidrecall.ui.theme.FangzengRapidRecallTheme
 enum class GameScreen() {
     MainMenu,
     Game,
+    Log,
     Summary,
 }
+
 
 class MainActivity : ComponentActivity() {
 
     val gameViewModel: GameViewModel = GameViewModel()
+    val gameStorage: GameStorage = GameStorage()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +57,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FangzengRapidRecallTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    // I learned how to navigate between screens through this link: https://developer.android.com/codelabs/basic-android-kotlin-compose-navigation#0
                     var navController: NavHostController = rememberNavController()
 
                     NavHost(navController = navController, startDestination = GameScreen.MainMenu.name, Modifier.padding(innerPadding)) {
@@ -63,6 +67,9 @@ class MainActivity : ComponentActivity() {
                                 {
                                     navController.navigate(GameScreen.Game.name)
                                     gameViewModel.startGame(it)
+                                },
+                                {
+                                    navController.navigate(GameScreen.Log.name)
                                 },
                                 {
                                     navController.navigate(GameScreen.Summary.name)
@@ -78,11 +85,23 @@ class MainActivity : ComponentActivity() {
                                     end = 16.dp  // For some reason if I don't override the side values, there's no padding on the sides??
                                     ),
                                 gameViewModel,
-                                onReturnToMenuClicked = {navController.navigate(GameScreen.MainMenu.name)}
+                                onReturnToMenuClicked = {
+                                    navController.navigate(GameScreen.MainMenu.name)
+
+                                },
+                                onGameEnd = {
+                                        sequenceLen: Int, userInput: List<Int>, targetSeq: List<Int>, timestamp: String ->
+                                    gameStorage.addGame(sequenceLen, userInput, targetSeq, timestamp)
+                                }
+
                             )
                         }
+                        composable(route = GameScreen.Log.name) {
+                            LogScreen(modifier = Modifier.fillMaxSize().padding(innerPadding),
+                                gameStorage.getGamesList(), {navController.navigate(GameScreen.MainMenu.name)})
+                        }
                         composable(route = GameScreen.Summary.name) {
-                            Summary(modifier = Modifier.fillMaxSize().padding(innerPadding))
+                            SummaryScreen(modifier = Modifier.fillMaxSize().padding(innerPadding))
                         }
                     }
                 }

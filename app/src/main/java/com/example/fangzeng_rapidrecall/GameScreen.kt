@@ -23,9 +23,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.sql.Timestamp
+import java.text.SimpleDateFormat
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
+import kotlin.time.Instant
+
+fun convertStringToNumList(str: String): MutableList<Int> {
+    val seq: MutableList<Int> = mutableListOf()
+    for (i in 0 until str.length) {
+        seq.add(str[i].digitToInt())
+    }
+    return seq
+}
+
 
 @Composable
-fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel, onReturnToMenuClicked: () -> Unit = {}) {
+fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel, onReturnToMenuClicked: () -> Unit,
+               onGameEnd: (sequenceLen: Int, userInput: List<Int>, targetSeq: List<Int>, timestamp: String) -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
 
     var playerSequence by remember{mutableStateOf("")}
@@ -59,10 +76,7 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel, onReturn
 
                 IconButton(onClick = {
                     if (playerSequence.length == 0) return@IconButton
-                    val seq: MutableList<Int> = mutableListOf()
-                    for (i in 0 until playerSequence.length) {
-                        seq.add(playerSequence[i].digitToInt())
-                    }
+                    val seq: MutableList<Int> = convertStringToNumList(playerSequence)
                     viewModel.submitSequence(seq)
                 }) {
                     Icon(
@@ -74,7 +88,12 @@ fun GameScreen(modifier: Modifier = Modifier, viewModel: GameViewModel, onReturn
         }
 
         if (uiState.showBackButton) {
-            Button(onClick = {onReturnToMenuClicked()}) {
+            Button(onClick = {
+
+                onGameEnd(viewModel.seqLen, convertStringToNumList(playerSequence), viewModel.sequence,
+                    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()))
+                onReturnToMenuClicked()
+            }) {
                 Text("Return to menu")
             }
         }
