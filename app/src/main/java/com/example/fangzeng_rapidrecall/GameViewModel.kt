@@ -14,6 +14,7 @@ import kotlin.random.Random
 val DIGIT_DISPLAY_TIME = 1500L
 val TIME_BTW_DIGITS = 500L
 
+// This class holds data for the GameViewModel
 data class SequenceUiState(
     val currentDigit: Int = -1,
     val displayDigit: Boolean = false,
@@ -21,7 +22,6 @@ data class SequenceUiState(
     val showInputBox: Boolean = false,
     val feedbackStr: String = "",
     val showBackButton: Boolean = false,
-
 )
 
 // This class contains information about the game state, such as the digit that is currently displayed, and whether the game started

@@ -30,7 +30,7 @@ fun MainMenu(modifier: Modifier = Modifier, startGameClicked: (Int) -> Unit, log
     var sequenceLen by remember { mutableIntStateOf(1) }
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(48.dp, Alignment.CenterVertically)) {
-        Text(text = "Main Menu", fontSize = 48.sp, fontFamily = FontFamily.Monospace)
+        Text(text = "Recall", fontSize = 48.sp, fontFamily = FontFamily.Monospace)
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             Button(onClick = {startGameClicked(sequenceLen)}) {

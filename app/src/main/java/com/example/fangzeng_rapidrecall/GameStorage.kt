@@ -3,9 +3,11 @@ package com.example.fangzeng_rapidrecall
 import java.sql.Timestamp
 import kotlin.math.min
 
+// This class holds the data for a single completed game
 data class SingleGameData (val sequenceLen: Int, val userSequence: List<Int>,
                            val targetSequence: List<Int>, val attemptCorrect: Boolean, val timestamp: String)
 
+// This class stores all played games this session, and has helper functions to get and aggregate game data
 class GameStorage() {
     private val gameDataList: MutableList<SingleGameData> = mutableListOf()
 
@@ -23,7 +25,7 @@ class GameStorage() {
         return gameDataList
     }
 
-    fun getNumAttemps(): Int {
+    fun getNumAttempts(): Int {
         return gameDataList.size
     }
 

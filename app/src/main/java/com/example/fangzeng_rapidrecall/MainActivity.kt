@@ -36,8 +36,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.fangzeng_rapidrecall.ui.theme.FangzengRapidRecallTheme
 
-// TODO: Implement screen changes in a better way (right now we check whether the game started in the main function and display the corresponding screen, but this gets clunky with more than 2 screens)
 
+// Enum class for navHost
 enum class GameScreen() {
     MainMenu,
     Game,
@@ -97,11 +97,26 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(route = GameScreen.Log.name) {
-                            LogScreen(modifier = Modifier.fillMaxSize().padding(innerPadding),
+                            LogScreen(modifier = Modifier.fillMaxSize().padding(
+                                top = innerPadding.calculateTopPadding(),
+                                bottom = innerPadding.calculateBottomPadding(),
+                                start = 16.dp,
+                                end = 16.dp  // For some reason if I don't override the side values, there's no padding on the sides??
+                            ),
                                 gameStorage.getGamesList(), {navController.navigate(GameScreen.MainMenu.name)})
                         }
                         composable(route = GameScreen.Summary.name) {
-                            SummaryScreen(modifier = Modifier.fillMaxSize().padding(innerPadding))
+                            SummaryScreen(modifier = Modifier.fillMaxSize().padding(
+                                top = innerPadding.calculateTopPadding(),
+                                bottom = innerPadding.calculateBottomPadding(),
+                                start = 16.dp,
+                                end = 16.dp  // For some reason if I don't override the side values, there's no padding on the sides??
+                                ),
+                                {navController.navigate(GameScreen.MainMenu.name)},
+                                gameStorage.getNumAttempts(),
+                                gameStorage.getNumCorrectAttempts(),
+                                gameStorage.getAccuracyPercentage()
+                            )
                         }
                     }
                 }
